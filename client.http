@@ -1,0 +1,28 @@
+### Teste da API Question API
+
+# GET - Listar todos os usuários
+GET http://localhost:3000/user
+
+###
+
+# POST - Criar novo usuário
+POST http://localhost:3000/user
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao@email.com",
+  "password": "senha123"
+}
+
+###
+
+# POST - Criar outro usuário para teste
+POST http://localhost:3000/user
+Content-Type: application/json
+
+{
+  "name": "Maria Santos",
+  "email": "maria@email.com",
+  "password": "senha456"
+}
