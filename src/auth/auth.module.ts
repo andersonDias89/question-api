@@ -5,11 +5,13 @@ import { UserModule } from 'src/user/user.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConfig } from 'src/config/jwt.config';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
-  providers: [AuthService],
+  providers: [AuthService, LocalStrategy],
   controllers: [AuthController],
   exports: [AuthService],
-  imports: [UserModule, PrismaModule, JwtModule.register(jwtConfig)],
+  imports: [UserModule, PrismaModule, PassportModule, JwtModule.register(jwtConfig)],
 })
 export class AuthModule {}
