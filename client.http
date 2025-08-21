@@ -14,6 +14,11 @@ Content-Type: application/json
   "email": "joao@email.com",
   "password": "senha123"
 }
+###
+
+# GET - Listar usuário por ID
+GET http://localhost:3000/user/136b3ce2-3fc7-407f-bb5b-3b71863e76e3
+Content-Type: application/json
 
 ###
 

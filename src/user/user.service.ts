@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Get, Injectable, Param } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserResponseDto } from './dtos/user-response.dto';
@@ -14,6 +14,14 @@ export class UserService {
         return users.map(user => plainToInstance(UserResponseDto, user));
     }
 
+    async getUserById(id: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { id }
+        });
+        return plainToInstance(UserResponseDto, user);
+    }
+    
+       
     async createUser(user: CreateUserDto) {
         const userExists = await this.prisma.user.findUnique({
             where: { email: user.email }
