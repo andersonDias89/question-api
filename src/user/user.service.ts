@@ -1,14 +1,17 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { UserResponseDto } from './dtos/user-response.dto';
 import { hashPassword } from 'src/common/password';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserService {
     constructor(private readonly prisma: PrismaService) {}
 
     async getUsers() {
-        return this.prisma.user.findMany();
+        const users = await this.prisma.user.findMany();
+        return users.map(user => plainToInstance(UserResponseDto, user));
     }
 
     async createUser(user: CreateUserDto) {
