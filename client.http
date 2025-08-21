@@ -29,7 +29,7 @@ Content-Type: application/json
 ###
 
 # GET - Listar usuário por ID
-GET http://localhost:3000/user/136b3ce2-3fc7-407f-bb5b-3b71863e76e3
+GET http://localhost:3000/user/ddb18e2f-187b-46c7-93c7-388a353bcb5b
 Content-Type: application/json
 
 ###
