@@ -28,11 +28,12 @@ export class UserService {
     
        
     async createUser(user: CreateUserDto) {
-        const userExists = await this.prisma.user.findUnique({
+        const emailExist = await this.prisma.user.findUnique({
             where: { email: user.email }
         });
-        if (userExists) {
-            throw new ConflictException('User already exists');
+
+        if (emailExist) {
+            throw new ConflictException('Email already exists');
         }
 
         const hashedPassword = await hashPassword(user.password);

@@ -1,8 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { hashPassword } from '../common/password';
+
+// Mock da função hashPassword
+jest.mock('../common/password', () => ({
+  hashPassword: jest.fn(),
+}));
 
 describe('UserService', () => {
   let service: UserService;
@@ -40,8 +46,8 @@ describe('UserService', () => {
     it('deve retornar todos os usuários', async () => {
       // Arrange
       const mockUsers = [
-        { id: '1', name: 'João', email: 'joao@email.com', password: 'hash123' },
-        { id: '2', name: 'Maria', email: 'maria@email.com', password: 'hash456' },
+        { id: '1', name: 'João', email: 'joao@email.com', password: 'hash123', createdAt: new Date(), updatedAt: new Date() },
+        { id: '2', name: 'Maria', email: 'maria@email.com', password: 'hash456', createdAt: new Date(), updatedAt: new Date() },
       ];
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
 
@@ -74,7 +80,9 @@ describe('UserService', () => {
         id: '1', 
         name: 'João', 
         email: 'joao@email.com', 
-        password: 'hash123' 
+        password: 'hash123',
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
       const userId = '1';
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
@@ -90,16 +98,18 @@ describe('UserService', () => {
       expect(result.name).toBe('João');
     });
 
-    it('deve retornar null quando usuário não existe', async () => {
+    it('deve lançar NotFoundException quando usuário não existe', async () => {
       // Arrange
       const userId = '999';
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      // Act
-      const result = await service.getUserById(userId);
-
-      // Assert
-      expect(result).toBeNull();
+      // Act & Assert
+      await expect(service.getUserById(userId)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.getUserById(userId)).rejects.toThrow(
+        'user not found',
+      );
     });
   });
 
@@ -118,6 +128,8 @@ describe('UserService', () => {
         email: 'novo@email.com',
       };
 
+      const mockHashedPassword = 'hashedPassword123';
+      (hashPassword as jest.Mock).mockResolvedValue(mockHashedPassword);
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       mockPrismaService.user.create.mockResolvedValue(mockCreatedUser);
 
@@ -128,11 +140,12 @@ describe('UserService', () => {
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: createUserDto.email },
       });
+      expect(hashPassword).toHaveBeenCalledWith(createUserDto.password);
       expect(prismaService.user.create).toHaveBeenCalledWith({
         data: {
           name: createUserDto.name,
           email: createUserDto.email,
-          password: expect.any(String), // Senha será hasheada
+          password: mockHashedPassword,
         },
         select: {
           id: true,
@@ -143,7 +156,7 @@ describe('UserService', () => {
       expect(result).toEqual(mockCreatedUser);
     });
 
-    it('deve lançar ConflictException quando usuário já existe', async () => {
+    it('deve lançar ConflictException quando email já existe', async () => {
       // Arrange
       const createUserDto: CreateUserDto = {
         name: 'Usuário Existente',
@@ -162,6 +175,9 @@ describe('UserService', () => {
       // Act & Assert
       await expect(service.createUser(createUserDto)).rejects.toThrow(
         ConflictException,
+      );
+      await expect(service.createUser(createUserDto)).rejects.toThrow(
+        'Email already exists',
       );
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: createUserDto.email },
