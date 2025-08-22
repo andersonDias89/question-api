@@ -20,9 +20,9 @@ export class UserService {
         });
 
         if (!user) {
-            throw new NotFoundException('Usuário não encontrado');
+            throw new NotFoundException('user not found');
         }
-        
+
         return plainToInstance(UserResponseDto, user);
     }
     

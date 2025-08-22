@@ -6,7 +6,7 @@ export const ParamId = createParamDecorator((_data: unknown, ctx: ExecutionConte
   
   // ✅ Validação UUID
   if (!isValidUUID(id)) {
-    throw new BadRequestException('ID deve ser um UUID válido');
+    throw new BadRequestException('ID must be a valid UUID');
   }
   
   return id;
