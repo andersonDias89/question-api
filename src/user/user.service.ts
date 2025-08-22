@@ -1,8 +1,8 @@
 import { ConflictException, Get, Injectable, Param } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserResponseDto } from './dtos/user-response.dto';
-import { hashPassword } from 'src/common/password';
+import { hashPassword } from '../common/password';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
