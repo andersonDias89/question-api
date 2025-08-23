@@ -7,12 +7,15 @@ import { AuthModule } from './auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
+import { PaymentModule } from './payment/payment.module';
+import stripeConfig from './config/stripe.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      load: [stripeConfig],
     }),
     ThrottlerModule.forRoot([{
       ttl: 60000,
@@ -20,7 +23,7 @@ import { ConfigModule } from '@nestjs/config';
     }]),
     UserModule, 
     PrismaModule, 
-    AuthModule
+    AuthModule, PaymentModule
   ],
   controllers: [AppController],
   providers: [AppService, {
