@@ -1,45 +1,284 @@
 ### Teste da API Question API
 
-# GET - Listar todos os usuários
-GET http://localhost:3000/user
+# ===== CONFIGURAÇÃO DE VARIÁVEIS =====
+@baseUrl = https://e4eea2dd6b5d.ngrok-free.app
+@contentType = application/json
 
-###
+# ===== VARIÁVEIS PARA TESTES =====
+@userEmail = joao@email.com
+@userPassword = senha123
+@userName = João Silva
+
+# ===== VARIÁVEIS DINÂMICAS (serão preenchidas automaticamente) =====
+@authToken = 
+@userId = 
+@subscriptionId = 
+
+# ===== TESTES DE AUTENTICAÇÃO =====
 
 # POST - Criar novo usuário
-POST http://localhost:3000/user
-Content-Type: application/json
+POST {{baseUrl}}/user
+Content-Type: {{contentType}}
 
 {
-  "name": "João Silva",
-  "email": "joao@email.com",
-  "password": "senha123"
-}
-###
-
-# POST - Login
-POST http://localhost:3000/auth/login
-Content-Type: application/json
-
-
-{
-  "email": "joao@email.com",
-  "password": "senha123"
+  "name": "{{userName}}",
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}"
 }
 
 ###
 
-# GET - Listar usuário por ID
-GET http://localhost:3000/user/ddb18e2f-187b-46c7-93c7-388a353bcb5b
-Content-Type: application/json
+# POST - Login (captura o token automaticamente)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}"
+}
+
+###
+
+# ===== SCRIPT PARA CAPTURAR TOKEN E USER ID =====
+# Após o login, execute este script para configurar as variáveis
+> {%
+    if (response.status === 200) {
+        const body = response.body;
+        console.log("=== LOGIN RESPONSE ===");
+        console.log("Status:", response.status);
+        console.log("Body completo:", body);
+        console.log("Access token:", body.access_token);
+        console.log("User:", body.user);
+        
+        if (body.access_token) {
+            client.global.set("authToken", body.access_token);
+            console.log("✅ Token capturado:", body.access_token);
+        } else {
+            console.log("❌ Token não encontrado no response");
+        }
+        
+        if (body.user && body.user.id) {
+            client.global.set("userId", body.user.id);
+            console.log("✅ User ID capturado:", body.user.id);
+        } else {
+            console.log("❌ User ID não encontrado no response");
+        }
+    } else {
+        console.log("❌ Login falhou - Status:", response.status);
+        console.log("❌ Response:", response.body);
+    }
+%}
+
+###
+
+# GET - Listar todos os usuários
+GET {{baseUrl}}/user
+Authorization: Bearer {{authToken}}
+
+###
+
+# GET - Listar usuário por ID (usa o ID capturado do login)
+GET {{baseUrl}}/user/{{userId}}
+Authorization: Bearer {{authToken}}
 
 ###
 
 # POST - Criar outro usuário para teste
-POST http://localhost:3000/user
-Content-Type: application/json
+POST {{baseUrl}}/user
+Content-Type: {{contentType}}
 
 {
   "name": "Maria Santos",
   "email": "maria@email.com",
   "password": "senha456"
 }
+
+###
+
+# ===== TESTES DO STRIPE =====
+
+# POST - Criar assinatura (normal - requer método de pagamento do cliente)
+POST {{baseUrl}}/payment/subscription
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "priceId": "price_1RziPGIrPk9SZpjAkUAai3gB"
+}
+
+###
+
+# POST - Criar assinatura com método de pagamento de teste (para desenvolvimento)
+# @name createTestSubscription
+POST {{baseUrl}}/payment/subscription/test
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "priceId": "price_1RziPGIrPk9SZpjAkUAai3gB"
+}
+
+###
+
+# SCRIPT PARA DEBUG DO TOKEN E CAPTURAR SUBSCRIPTION ID =====
+> {%
+    console.log("=== SUBSCRIPTION REQUEST DEBUG ===");
+    const authToken = client.global.get("authToken");
+    const userId = client.global.get("userId");
+    
+    console.log("Auth Token definido:", authToken ? "✅ Sim" : "❌ Não");
+    console.log("Auth Token valor:", authToken ? authToken.substring(0, 20) + "..." : "Não definido");
+    console.log("User ID definido:", userId ? "✅ Sim" : "❌ Não");
+    console.log("User ID valor:", userId);
+    console.log("Request Status:", response.status);
+    console.log("Response Body:", response.body);
+    
+    if (!authToken) {
+        console.log("⚠️ ATENÇÃO: Token não está definido! Execute o login primeiro.");
+    }
+    
+    // Capturar subscription ID se a requisição foi bem-sucedida
+    if (response.status === 200 || response.status === 201) {
+        const body = response.body;
+        if (body.id) {
+            client.global.set("subscriptionId", body.id);
+            console.log("✅ Subscription ID capturado:", body.id);
+            console.log("✅ Stripe Subscription ID:", body.stripeSubscriptionId);
+            console.log("✅ Status:", body.status);
+            
+            if (body.stripeSubscriptionId) {
+                console.log("🔗 Link para Stripe Dashboard:");
+                console.log(`   https://dashboard.stripe.com/test/subscriptions/${body.stripeSubscriptionId}`);
+            }
+        }
+    }
+%}
+
+###
+
+
+
+###
+
+# GET - Verificar assinatura
+GET {{baseUrl}}/payment/subscription
+Authorization: Bearer {{authToken}}
+
+> {%
+    console.log("=== VERIFICAÇÃO DE ASSINATURA ===");
+    if (response.status === 200) {
+        const body = response.body;
+        console.log("✅ Assinatura encontrada:");
+        console.log("   - ID:", body.id);
+        console.log("   - Status:", body.status);
+        console.log("   - Stripe Subscription ID:", body.stripeSubscriptionId);
+        console.log("   - Customer ID:", body.stripeCustomerId);
+        console.log("   - Expira em:", body.currentPeriodEnd);
+        
+        if (body.stripeSubscriptionId) {
+            console.log("🔗 Link para Stripe Dashboard:");
+            console.log(`   https://dashboard.stripe.com/test/subscriptions/${body.stripeSubscriptionId}`);
+        }
+        
+        if (body.status === 'incomplete') {
+            console.log("⚠️ Status 'incomplete' - Pagamento pendente");
+            console.log("   Para ativar, configure webhooks ou processe o pagamento");
+        } else if (body.status === 'active') {
+            console.log("✅ Status 'active' - Assinatura ativa!");
+        }
+    } else if (response.status === 404) {
+        console.log("❌ Nenhuma assinatura encontrada");
+    } else {
+        console.log("❌ Erro ao verificar assinatura:", response.status);
+    }
+%}
+
+###
+
+# GET - Verificar status da assinatura
+GET {{baseUrl}}/payment/subscription/status
+Authorization: Bearer {{authToken}}
+
+> {%
+    console.log("=== STATUS DA ASSINATURA ===");
+    if (response.status === 200) {
+        const body = response.body;
+        console.log("Tem assinatura ativa:", body.hasActiveSubscription);
+        
+        if (body.hasActiveSubscription && body.subscription) {
+            console.log("📊 Detalhes da assinatura ativa:");
+            console.log("   - ID:", body.subscription.id);
+            console.log("   - Status:", body.subscription.status);
+            console.log("   - Expira em:", body.subscription.currentPeriodEnd);
+            console.log("   - Cancelar no fim do período:", body.subscription.cancelAtPeriodEnd);
+        }
+    }
+%}
+
+###
+
+# DELETE - Cancelar assinatura
+DELETE {{baseUrl}}/payment/subscription
+Authorization: Bearer {{authToken}}
+
+###
+
+# POST - Webhook do Stripe (para testes locais)
+POST {{baseUrl}}/payment/webhook
+Content-Type: {{contentType}}
+stripe-signature: YOUR_WEBHOOK_SIGNATURE
+
+{
+  "id": "evt_test_webhook",
+  "object": "event",
+  "type": "customer.subscription.created",
+  "data": {
+    "object": {
+      "id": "sub_test_123",
+      "object": "subscription",
+      "status": "active",
+      "current_period_end": 1640995200,
+      "metadata": {
+        "userId": "{{userId}}"
+      }
+    }
+  }
+}
+
+###
+
+# ===== UTILITÁRIOS =====
+
+# GET - Verificar status da API
+GET {{baseUrl}}/health
+
+###
+
+# GET - Verificar variáveis atuais
+# @name checkVars
+GET {{baseUrl}}/user/{{userId}}
+Authorization: Bearer {{authToken}}
+
+> {%
+    console.log("=== VARIÁVEIS ATUAIS ===");
+    console.log("Base URL:", client.global.get("baseUrl"));
+    console.log("Auth Token:", client.global.get("authToken") ? "Definido" : "Não definido");
+    console.log("User ID:", client.global.get("userId") ? client.global.get("userId") : "Não definido");
+    console.log("Subscription ID:", client.global.get("subscriptionId") ? client.global.get("subscriptionId") : "Não definido");
+%}
+
+###
+
+# ===== INSTRUÇÕES DE USO =====
+# 
+# 1. Execute primeiro o endpoint "POST - Login" para capturar o token
+# 2. Execute "POST - Criar assinatura com método de pagamento de teste" para criar uma assinatura
+# 3. Use "GET - Verificar assinatura" para ver os detalhes
+# 4. Use "GET - Verificar status da assinatura" para verificar se está ativa
+# 
+# ⚠️ IMPORTANTE:
+# - O status "incomplete" é normal quando a assinatura é criada
+# - Para ativar, configure webhooks no Stripe ou processe o pagamento
+# - Em produção, use o endpoint normal sem "/test"
+# - O endpoint "/test" usa um cartão de teste do Stripe automaticamente

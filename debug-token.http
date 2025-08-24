@@ -1,0 +1,85 @@
+### Debug Token - Teste Simples
+
+@baseUrl = https://e4eea2dd6b5d.ngrok-free.app
+@contentType = application/json
+
+# 1. Login e capturar token
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "joao@email.com",
+  "password": "senha123"
+}
+
+###
+
+# Script para debug do token
+> {%
+    console.log("=== DEBUG TOKEN ===");
+    console.log("Status:", response.status);
+    console.log("Body completo:", response.body);
+    
+    if (response.status === 200 || response.status === 201) {
+        const body = response.body;
+        
+        if (body.access_token) {
+            client.global.set("authToken", body.access_token);
+            console.log("✅ Token capturado:", body.access_token.substring(0, 20) + "...");
+            console.log("✅ Token completo:", body.access_token);
+        } else {
+            console.log("❌ Token não encontrado no response");
+        }
+        
+        if (body.user && body.user.id) {
+            client.global.set("userId", body.user.id);
+            console.log("✅ User ID capturado:", body.user.id);
+        }
+    } else {
+        console.log("❌ Login falhou");
+    }
+%}
+
+###
+
+# 2. Testar se o token foi capturado
+GET {{baseUrl}}/user
+Authorization: Bearer {{authToken}}
+
+###
+
+# Script para verificar se o token está funcionando
+> {%
+    console.log("=== VERIFICAÇÃO DO TOKEN ===");
+    console.log("Status:", response.status);
+    console.log("Token usado:", client.global.get("authToken") ? "Sim" : "Não");
+    
+    if (response.status === 200) {
+        console.log("✅ Token está funcionando!");
+    } else if (response.status === 401) {
+        console.log("❌ Token inválido ou expirado");
+        console.log("Token atual:", client.global.get("authToken"));
+    }
+%}
+
+###
+
+# 3. Tentar criar assinatura
+POST {{baseUrl}}/payment/subscription/test
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "priceId": "price_1RziPGIrPk9SZpjAkUAai3gB"
+}
+
+###
+
+# Script para debug da assinatura
+> {%
+    console.log("=== DEBUG ASSINATURA ===");
+    console.log("Status:", response.status);
+    console.log("Token usado:", client.global.get("authToken") ? "Sim" : "Não");
+    console.log("Response:", response.body);
+%}
