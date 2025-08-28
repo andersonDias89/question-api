@@ -11,7 +11,7 @@ export class UserResponseDto {
     email: string;
 
     @Exclude()  
-    password: string;
+    password?: string;
 
     @Expose()  
     createdAt: Date;

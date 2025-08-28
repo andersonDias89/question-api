@@ -96,6 +96,83 @@ Content-Type: {{contentType}}
 
 ###
 
+# ===== NOVOS ENDPOINTS DE USUÁRIO =====
+
+# GET - Perfil do usuário autenticado
+GET {{baseUrl}}/user/profile
+Authorization: Bearer {{authToken}}
+
+###
+
+# PUT - Atualizar perfil do usuário
+PUT {{baseUrl}}/user/profile
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "João Silva Atualizado"
+}
+
+###
+
+# PUT - Alterar senha do usuário
+PUT {{baseUrl}}/user/change-password
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "currentPassword": "{{userPassword}}",
+  "newPassword": "novaSenha123"
+}
+
+###
+
+# ===== ENDPOINTS DE RECUPERAÇÃO DE SENHA =====
+
+# POST - Solicitar recuperação de senha
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "{{userEmail}}"
+}
+
+> {%
+    console.log("=== FORGOT PASSWORD ===");
+    console.log("Status:", response.status);
+    console.log("Response:", response.body);
+    
+    if (response.status === 200) {
+        console.log("✅ Solicitação de recuperação enviada");
+        console.log("📧 Verifique o console do servidor para o token de reset");
+    }
+%}
+
+###
+
+# POST - Redefinir senha com token
+# ATENÇÃO: Substitua "SEU_TOKEN_AQUI" pelo token que aparece no console do servidor
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "token": "SEU_TOKEN_AQUI",
+  "newPassword": "senhaNova456"
+}
+
+> {%
+    console.log("=== RESET PASSWORD ===");
+    console.log("Status:", response.status);
+    console.log("Response:", response.body);
+    
+    if (response.status === 200) {
+        console.log("✅ Senha redefinida com sucesso!");
+        console.log("🔑 Agora você pode fazer login com a nova senha");
+    }
+%}
+
+###
+
 # ===== TESTES DO STRIPE =====
 
 # POST - Criar assinatura (normal - requer método de pagamento do cliente)
@@ -252,6 +329,24 @@ stripe-signature: YOUR_WEBHOOK_SIGNATURE
 
 # GET - Verificar status da API
 GET {{baseUrl}}/health
+
+###
+
+# GET - Testar recurso premium (requer assinatura ativa)
+GET {{baseUrl}}/premium-feature
+Authorization: Bearer {{authToken}}
+
+> {%
+    console.log("=== TESTE RECURSO PREMIUM ===");
+    console.log("Status:", response.status);
+    console.log("Response:", response.body);
+    
+    if (response.status === 200) {
+        console.log("✅ Acesso autorizado ao recurso premium!");
+    } else if (response.status === 403) {
+        console.log("❌ Acesso negado - verifique se você tem uma assinatura ativa");
+    }
+%}
 
 ###
 
