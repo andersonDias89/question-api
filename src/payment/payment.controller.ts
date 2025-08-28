@@ -17,7 +17,6 @@ import { PaymentService } from './payment.service';
 import { CreateSubscriptionDto } from './dtos/create-subscription.dto';
 import { SubscriptionResponseDto } from './dtos/subscription-response.dto';
 import { SubscriptionStatusDto } from './dtos/subscription-status.dto';
-// @ts-ignore
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';

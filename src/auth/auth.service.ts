@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { comparePassword, hashPassword } from 'src/common/password';
 import { JwtService } from '@nestjs/jwt';
@@ -40,7 +35,7 @@ export class AuthService {
     console.log('�� Senha válida:', isPasswordValid); // Debug
 
     if (isPasswordValid) {
-      const { password, ...result } = user;
+      const { password: _, ...result } = user;
       console.log('✅ Usuário validado com sucesso');
       return result as UserResponseDto;
     }

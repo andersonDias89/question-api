@@ -57,7 +57,7 @@ export class PaymentService {
       // 3. Verificar se o price existe no Stripe
       try {
         await this.stripe.prices.retrieve(createSubscriptionDto.priceId);
-      } catch (error) {
+      } catch {
         throw new BadRequestException(
           'Price ID inválido ou não encontrado no Stripe',
         );
@@ -120,7 +120,7 @@ export class PaymentService {
       });
 
       return plainToInstance(SubscriptionResponseDto, subscription);
-    } catch (error) {
+    } catch {
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
@@ -160,7 +160,7 @@ export class PaymentService {
       // 3. Verificar se o price existe no Stripe
       try {
         await this.stripe.prices.retrieve(createSubscriptionDto.priceId);
-      } catch (error) {
+      } catch {
         throw new BadRequestException(
           'Price ID inválido ou não encontrado no Stripe',
         );
@@ -251,7 +251,7 @@ export class PaymentService {
       });
 
       return plainToInstance(SubscriptionResponseDto, subscription);
-    } catch (error) {
+    } catch {
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
@@ -366,7 +366,7 @@ export class PaymentService {
         default:
           console.log(`Evento não tratado: ${event.type}`);
       }
-    } catch (error) {
+    } catch {
       console.error('Erro ao processar webhook:', error);
       throw error;
     }
