@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -15,15 +20,19 @@ export class SubscriptionGuard implements CanActivate {
 
     // Verificar se o usuário tem uma assinatura ativa
     const subscription = await this.prisma.subscription.findUnique({
-      where: { userId: user.userId }
+      where: { userId: user.userId },
     });
 
     if (!subscription) {
-      throw new ForbiddenException('Subscription required to access this resource');
+      throw new ForbiddenException(
+        'Subscription required to access this resource',
+      );
     }
 
     if (subscription.status !== 'active') {
-      throw new ForbiddenException('Subscription is not active. Current status: ' + subscription.status);
+      throw new ForbiddenException(
+        'Subscription is not active. Current status: ' + subscription.status,
+      );
     }
 
     // Verificar se a assinatura não expirou

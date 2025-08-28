@@ -1,17 +1,17 @@
-import { 
-  Controller, 
-  Post, 
-  Get, 
-  Delete, 
-  Body, 
-  UseGuards, 
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Body,
+  UseGuards,
   Request,
   HttpStatus,
   HttpCode,
   Headers,
   RawBodyRequest,
   Req,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreateSubscriptionDto } from './dtos/create-subscription.dto';
@@ -28,10 +28,10 @@ export class PaymentController {
 
   constructor(
     private readonly paymentService: PaymentService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {
     const secretKey = this.configService.get<string>('payment.secretKey');
-    
+
     if (!secretKey) {
       throw new Error('STRIPE_SECRET_KEY não configurada');
     }
@@ -47,20 +47,25 @@ export class PaymentController {
   @HttpCode(HttpStatus.CREATED)
   async createSubscription(
     @Request() req,
-    @Body() createSubscriptionDto: CreateSubscriptionDto
+    @Body() createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<SubscriptionResponseDto> {
     console.log('🎯 PaymentController - createSubscription chamado');
     console.log('🎯 PaymentController - req.user:', req.user);
     console.log('🎯 PaymentController - req.user.userId:', req.user?.userId);
-    console.log('🎯 PaymentController - createSubscriptionDto:', createSubscriptionDto);
-    
+    console.log(
+      '🎯 PaymentController - createSubscriptionDto:',
+      createSubscriptionDto,
+    );
+
     if (!req.user || !req.user.userId) {
-      throw new BadRequestException('Usuário não autenticado ou ID não encontrado');
+      throw new BadRequestException(
+        'Usuário não autenticado ou ID não encontrado',
+      );
     }
-    
+
     return await this.paymentService.createSubscription(
-      req.user.userId, 
-      createSubscriptionDto
+      req.user.userId,
+      createSubscriptionDto,
     );
   }
 
@@ -69,25 +74,34 @@ export class PaymentController {
   @HttpCode(HttpStatus.CREATED)
   async createSubscriptionWithTestPayment(
     @Request() req,
-    @Body() createSubscriptionDto: CreateSubscriptionDto
+    @Body() createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<SubscriptionResponseDto> {
-    console.log('🎯 PaymentController - createSubscriptionWithTestPayment chamado');
+    console.log(
+      '🎯 PaymentController - createSubscriptionWithTestPayment chamado',
+    );
     console.log('🎯 PaymentController - req.user.userId:', req.user?.userId);
-    console.log('🎯 PaymentController - createSubscriptionDto:', createSubscriptionDto);
-    
+    console.log(
+      '🎯 PaymentController - createSubscriptionDto:',
+      createSubscriptionDto,
+    );
+
     if (!req.user || !req.user.userId) {
-      throw new BadRequestException('Usuário não autenticado ou ID não encontrado');
+      throw new BadRequestException(
+        'Usuário não autenticado ou ID não encontrado',
+      );
     }
-    
+
     return await this.paymentService.createSubscriptionWithTestPaymentMethod(
-      req.user.userId, 
-      createSubscriptionDto
+      req.user.userId,
+      createSubscriptionDto,
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('subscription')
-  async getSubscription(@Request() req): Promise<SubscriptionResponseDto | null> {
+  async getSubscription(
+    @Request() req,
+  ): Promise<SubscriptionResponseDto | null> {
     return await this.paymentService.getSubscription(req.user.userId);
   }
 
@@ -109,10 +123,12 @@ export class PaymentController {
   @HttpCode(HttpStatus.OK)
   async handleWebhook(
     @Req() request: RawBodyRequest<Request>,
-    @Headers('stripe-signature') signature: string
+    @Headers('stripe-signature') signature: string,
   ): Promise<void> {
-    const webhookSecret = this.configService.get<string>('payment.webhookSecret');
-    
+    const webhookSecret = this.configService.get<string>(
+      'payment.webhookSecret',
+    );
+
     if (!webhookSecret) {
       throw new Error('STRIPE_WEBHOOK_SECRET não configurada');
     }
@@ -128,7 +144,7 @@ export class PaymentController {
       event = this.stripe.webhooks.constructEvent(
         request.rawBody,
         signature,
-        webhookSecret
+        webhookSecret,
       );
     } catch (err) {
       console.error('Erro na assinatura do webhook:', err);

@@ -16,7 +16,7 @@ export class AppController {
   getHealth(): { status: string; timestamp: string } {
     return {
       status: 'OK',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -26,7 +26,8 @@ export class AppController {
   getPremiumFeature(): { message: string; feature: string } {
     return {
       message: 'You have access to this premium feature!',
-      feature: 'This is an example of a feature that only users with an active subscription can access.'
+      feature:
+        'This is an example of a feature that only users with an active subscription can access.',
     };
   }
 }

@@ -1,4 +1,14 @@
-import { Controller, Get, Body, Post, Put, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Post,
+  Put,
+  UseGuards,
+  Request,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -8,43 +18,49 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
-    // Endpoints protegidos por autenticação
-    @UseGuards(JwtAuthGuard)
-    @Get()
-    async getUsers() {
-        return this.userService.getUsers();
-    }
+  // Endpoints protegidos por autenticação
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getUsers() {
+    return this.userService.getUsers();
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    async getUserProfile(@Request() req) {
-        return this.userService.getUserById(req.user.userId);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getUserProfile(@Request() req) {
+    return this.userService.getUserById(req.user.userId);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Get(':id')
-    async getUserById(@ParamId() id: string) {
-        return this.userService.getUserById(id);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async getUserById(@ParamId() id: string) {
+    return this.userService.getUserById(id);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Put('profile')
-    async updateUserProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-        return this.userService.updateUser(req.user.userId, updateUserDto);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Put('profile')
+  async updateUserProfile(
+    @Request() req,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateUser(req.user.userId, updateUserDto);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Put('change-password')
-    @HttpCode(HttpStatus.OK)
-    async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
-        return this.userService.changePassword(req.user.userId, changePasswordDto);
-    }
-    
-    // Endpoint público para registro
-    @Post()
-    async createUser(@Body() user: CreateUserDto) {
-        return this.userService.createUser(user);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Put('change-password')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Request() req,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.userService.changePassword(req.user.userId, changePasswordDto);
+  }
+
+  // Endpoint público para registro
+  @Post()
+  async createUser(@Body() user: CreateUserDto) {
+    return this.userService.createUser(user);
+  }
 }

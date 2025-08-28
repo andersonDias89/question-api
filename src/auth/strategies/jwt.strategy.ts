@@ -17,13 +17,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     console.log('🔍 JWT Strategy - Payload recebido:', payload);
     console.log('🔍 JWT Strategy - payload.sub:', payload.sub);
     console.log('🔍 JWT Strategy - payload.email:', payload.email);
-    
-    const user = { 
-      userId: payload.sub, 
+
+    const user = {
+      userId: payload.sub,
       email: payload.email,
-      name: payload.name 
+      name: payload.name,
     };
-    
+
     console.log('✅ JWT Strategy - Usuário validado:', user);
     console.log('✅ JWT Strategy - user.userId:', user.userId);
     return user;

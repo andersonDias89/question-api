@@ -14,6 +14,11 @@ import { SubscriptionGuard } from './guards/subscription.guard';
   providers: [AuthService, LocalStrategy, JwtStrategy, SubscriptionGuard],
   controllers: [AuthController],
   exports: [AuthService, SubscriptionGuard],
-  imports: [UserModule, PrismaModule, PassportModule, JwtModule.register(jwtConfig)],
+  imports: [
+    UserModule,
+    PrismaModule,
+    PassportModule,
+    JwtModule.register(jwtConfig),
+  ],
 })
 export class AuthModule {}
