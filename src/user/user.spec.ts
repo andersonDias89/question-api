@@ -46,8 +46,22 @@ describe('UserService', () => {
     it('deve retornar todos os usuários', async () => {
       // Arrange
       const mockUsers = [
-        { id: '1', name: 'João', email: 'joao@email.com', password: 'hash123', createdAt: new Date(), updatedAt: new Date() },
-        { id: '2', name: 'Maria', email: 'maria@email.com', password: 'hash456', createdAt: new Date(), updatedAt: new Date() },
+        {
+          id: '1',
+          name: 'João',
+          email: 'joao@email.com',
+          password: 'hash123',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: '2',
+          name: 'Maria',
+          email: 'maria@email.com',
+          password: 'hash456',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ];
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
 
@@ -76,13 +90,13 @@ describe('UserService', () => {
   describe('getUserById', () => {
     it('deve retornar um usuário pelo ID', async () => {
       // Arrange
-      const mockUser = { 
-        id: '1', 
-        name: 'João', 
-        email: 'joao@email.com', 
+      const mockUser = {
+        id: '1',
+        name: 'João',
+        email: 'joao@email.com',
         password: 'hash123',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
       const userId = '1';
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);

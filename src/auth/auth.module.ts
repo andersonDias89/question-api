@@ -8,11 +8,17 @@ import { jwtConfig } from 'src/config/jwt.config';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { SubscriptionGuard } from './guards/subscription.guard';
 
 @Module({
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, SubscriptionGuard],
   controllers: [AuthController],
-  exports: [AuthService],
-  imports: [UserModule, PrismaModule, PassportModule, JwtModule.register(jwtConfig)],
+  exports: [AuthService, SubscriptionGuard],
+  imports: [
+    UserModule,
+    PrismaModule,
+    PassportModule,
+    JwtModule.register(jwtConfig),
+  ],
 })
 export class AuthModule {}

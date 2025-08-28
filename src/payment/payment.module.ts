@@ -6,12 +6,9 @@ import { PrismaModule } from '../prisma/prisma.module';
 import stripeConfig from 'src/config/stripe.config';
 
 @Module({
-  imports: [
-    ConfigModule.forFeature(stripeConfig),
-    PrismaModule,
-  ],
+  imports: [ConfigModule.forFeature(stripeConfig), PrismaModule],
   providers: [PaymentService],
   controllers: [PaymentController],
-  exports: [PaymentService]
+  exports: [PaymentService],
 })
 export class PaymentModule {}

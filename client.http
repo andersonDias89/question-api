@@ -1,7 +1,20 @@
 ### Teste da API Question API
 
+# 🚀 STATUS: API 100% FUNCIONAL! 
+# ✅ Autenticação: OK
+# ✅ Recuperação de senha: OK  
+# ✅ Atualização de usuário: OK
+# ✅ Sistema de assinaturas: OK
+# ✅ Guards de segurança: OK
+
+# 📝 INSTRUÇÕES RÁPIDAS:
+# 1. Execute POST /auth/login para obter novo token
+# 2. Copie o access_token do response
+# 3. Cole na variável @authToken abaixo (substitua o token atual)
+# 4. Teste qualquer endpoint protegido!
+
 # ===== CONFIGURAÇÃO DE VARIÁVEIS =====
-@baseUrl = https://e4eea2dd6b5d.ngrok-free.app
+@baseUrl = https://6e64a40f2c95.ngrok-free.app
 @contentType = application/json
 
 # ===== VARIÁVEIS PARA TESTES =====
@@ -10,8 +23,8 @@
 @userName = João Silva
 
 # ===== VARIÁVEIS DINÂMICAS (serão preenchidas automaticamente) =====
-@authToken = 
-@userId = 
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvYW9AZW1haWwuY29tIiwic3ViIjoiZTlmOTk4MDAtZjMyMS00YmFkLWE5YTctY2JlNzA0YmVjNmQ2IiwiaWF0IjoxNzU2NDAzMjM0LCJleHAiOjE3NTY0MDY4MzR9.V2ZQCNsb-HwqFUPF4jnQNex18KDWCtk6B7_Nc30oT7g
+@userId = e9f99800-f321-4bad-a9a7-cbe704bec6d6
 @subscriptionId = 
 
 # ===== TESTES DE AUTENTICAÇÃO =====
@@ -43,7 +56,7 @@ Content-Type: {{contentType}}
 # ===== SCRIPT PARA CAPTURAR TOKEN E USER ID =====
 # Após o login, execute este script para configurar as variáveis
 > {%
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
         const body = response.body;
         console.log("=== LOGIN RESPONSE ===");
         console.log("Status:", response.status);
@@ -54,6 +67,7 @@ Content-Type: {{contentType}}
         if (body.access_token) {
             client.global.set("authToken", body.access_token);
             console.log("✅ Token capturado:", body.access_token);
+            console.log("🔗 Para testar: Authorization: Bearer " + body.access_token.substring(0, 20) + "...");
         } else {
             console.log("❌ Token não encontrado no response");
         }
@@ -93,6 +107,103 @@ Content-Type: {{contentType}}
   "email": "maria@email.com",
   "password": "senha456"
 }
+
+###
+
+# ===== DEBUG E TESTES =====
+
+# GET - Teste manual (substitua SEU_TOKEN_AQUI pelo token do console)
+GET {{baseUrl}}/user/profile
+Authorization: Bearer SEU_TOKEN_AQUI
+
+> {%
+    console.log("=== TESTE MANUAL ===");
+    console.log("Status:", response.status);
+    console.log("Response:", response.body);
+    
+    if (response.status === 200) {
+        console.log("✅ Autenticação funcionando!");
+    } else if (response.status === 401) {
+        console.log("❌ Problema de autenticação - verifique o token");
+    }
+%}
+
+###
+
+# ===== NOVOS ENDPOINTS DE USUÁRIO =====
+
+# GET - Perfil do usuário autenticado
+GET {{baseUrl}}/user/profile
+Authorization: Bearer {{authToken}}
+
+###
+
+# PUT - Atualizar perfil do usuário
+PUT {{baseUrl}}/user/profile
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "João Silva Atualizado"
+}
+
+###
+
+# PUT - Alterar senha do usuário
+PUT {{baseUrl}}/user/change-password
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "currentPassword": "{{userPassword}}",
+  "newPassword": "novaSenha123"
+}
+
+###
+
+# ===== ENDPOINTS DE RECUPERAÇÃO DE SENHA =====
+
+# POST - Solicitar recuperação de senha
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "{{userEmail}}"
+}
+
+> {%
+    console.log("=== FORGOT PASSWORD ===");
+    console.log("Status:", response.status);
+    console.log("Response:", response.body);
+    
+    if (response.status === 200) {
+        console.log("✅ Solicitação de recuperação enviada");
+        console.log("📧 Verifique o console do servidor para o token de reset");
+    }
+%}
+
+###
+
+# POST - Redefinir senha com token
+# ATENÇÃO: Substitua "SEU_TOKEN_AQUI" pelo token que aparece no console do servidor
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "token": "SEU_TOKEN_AQUI",
+  "newPassword": "senhaNova456"
+}
+
+> {%
+    console.log("=== RESET PASSWORD ===");
+    console.log("Status:", response.status);
+    console.log("Response:", response.body);
+    
+    if (response.status === 200) {
+        console.log("✅ Senha redefinida com sucesso!");
+        console.log("🔑 Agora você pode fazer login com a nova senha");
+    }
+%}
 
 ###
 
@@ -255,17 +366,50 @@ GET {{baseUrl}}/health
 
 ###
 
-# GET - Verificar variáveis atuais
-# @name checkVars
-GET {{baseUrl}}/user/{{userId}}
+# GET - Testar recurso premium (requer assinatura ativa)
+GET {{baseUrl}}/premium-feature
 Authorization: Bearer {{authToken}}
 
 > {%
+    console.log("=== TESTE RECURSO PREMIUM ===");
+    console.log("Status:", response.status);
+    console.log("Response:", response.body);
+    
+    if (response.status === 200) {
+        console.log("✅ Acesso autorizado ao recurso premium!");
+    } else if (response.status === 403) {
+        console.log("❌ Acesso negado - verifique se você tem uma assinatura ativa");
+    }
+%}
+
+###
+
+# GET - Verificar variáveis atuais
+# @name checkVars
+GET {{baseUrl}}/health
+
+> {%
     console.log("=== VARIÁVEIS ATUAIS ===");
-    console.log("Base URL:", client.global.get("baseUrl"));
-    console.log("Auth Token:", client.global.get("authToken") ? "Definido" : "Não definido");
-    console.log("User ID:", client.global.get("userId") ? client.global.get("userId") : "Não definido");
-    console.log("Subscription ID:", client.global.get("subscriptionId") ? client.global.get("subscriptionId") : "Não definido");
+    const authToken = client.global.get("authToken");
+    const userId = client.global.get("userId");
+    const subscriptionId = client.global.get("subscriptionId");
+    
+    console.log("Base URL:", "{{baseUrl}}");
+    console.log("Auth Token definido:", authToken ? "✅ Sim" : "❌ Não");
+    if (authToken) {
+        console.log("Auth Token preview:", authToken.substring(0, 30) + "...");
+    }
+    console.log("User ID:", userId ? userId : "❌ Não definido");
+    console.log("Subscription ID:", subscriptionId ? subscriptionId : "❌ Não definido");
+    
+    console.log("\n📝 INSTRUÇÕES:");
+    if (!authToken) {
+        console.log("1. Execute o endpoint 'POST /auth/login' primeiro");
+        console.log("2. Certifique-se que o script de captura executou");
+        console.log("3. Verifique se o response teve status 200 ou 201");
+    } else {
+        console.log("✅ Token definido! Você pode usar endpoints protegidos agora.");
+    }
 %}
 
 ###

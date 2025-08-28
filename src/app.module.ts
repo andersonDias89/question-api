@@ -17,18 +17,24 @@ import stripeConfig from './config/stripe.config';
       envFilePath: '.env',
       load: [stripeConfig],
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 10,
-    }]),
-    UserModule, 
-    PrismaModule, 
-    AuthModule, PaymentModule
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
+    UserModule,
+    PrismaModule,
+    AuthModule,
+    PaymentModule,
   ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: ThrottlerGuard,
-  }],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
