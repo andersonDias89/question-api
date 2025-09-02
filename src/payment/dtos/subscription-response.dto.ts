@@ -1,31 +1,31 @@
 // src/payment/dtos/subscription-response.dto.ts
-import { Expose } from 'class-transformer';
+import { Expose } from 'class-transformer'
 
 export class SubscriptionResponseDto {
   @Expose()
-  id: string;
+  id: string
 
   @Expose()
-  userId: string;
+  userId: string
 
   @Expose()
-  stripeCustomerId: string;
+  stripeCustomerId: string
 
   @Expose()
-  stripeSubscriptionId: string;
+  stripeSubscriptionId: string
 
   @Expose()
-  status: string;
+  status: string
 
   @Expose()
-  currentPeriodEnd: Date;
+  currentPeriodEnd: Date
 
   @Expose()
-  cancelAtPeriodEnd: boolean;
+  cancelAtPeriodEnd: boolean
 
   @Expose()
-  createdAt: Date;
+  createdAt: Date
 
   @Expose()
-  updatedAt: Date;
+  updatedAt: Date
 }

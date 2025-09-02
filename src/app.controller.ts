@@ -1,7 +1,7 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { SubscriptionGuard } from './auth/guards/subscription.guard';
+import { Controller, Get, UseGuards } from '@nestjs/common'
+import { AppService } from './app.service'
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard'
+import { SubscriptionGuard } from './auth/guards/subscription.guard'
 
 @Controller()
 export class AppController {
@@ -9,7 +9,7 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return this.appService.getHello();
+    return this.appService.getHello()
   }
 
   @Get('health')
@@ -17,7 +17,7 @@ export class AppController {
     return {
       status: 'OK',
       timestamp: new Date().toISOString(),
-    };
+    }
   }
 
   // Endpoint que requer autenticação + assinatura ativa
@@ -28,6 +28,6 @@ export class AppController {
       message: 'You have access to this premium feature!',
       feature:
         'This is an example of a feature that only users with an active subscription can access.',
-    };
+    }
   }
 }
