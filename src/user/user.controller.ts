@@ -15,13 +15,13 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 import { ParamId } from 'src/decorators/param-id.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthenticatedRequest } from '../auth/types/request.types';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Endpoints protegidos por autenticação
-  @UseGuards(JwtAuthGuard)
+  // Endpoint público para listar usuários
   @Get()
   async getUsers() {
     return this.userService.getUsers();
@@ -29,7 +29,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getUserProfile(@Request() req) {
+  async getUserProfile(@Request() req: AuthenticatedRequest) {
     return this.userService.getUserById(req.user.userId);
   }
 
@@ -42,7 +42,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put('profile')
   async updateUserProfile(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.userService.updateUser(req.user.userId, updateUserDto);
@@ -52,7 +52,7 @@ export class UserController {
   @Put('change-password')
   @HttpCode(HttpStatus.OK)
   async changePassword(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
     return this.userService.changePassword(req.user.userId, changePasswordDto);

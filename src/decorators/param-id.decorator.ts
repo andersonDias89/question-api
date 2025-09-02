@@ -7,7 +7,7 @@ import {
 export const ParamId = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): string => {
     const request = ctx.switchToHttp().getRequest();
-    const id = request.params.id;
+    const id: string = request.params.id;
 
     // ✅ Validação UUID
     if (!isValidUUID(id)) {

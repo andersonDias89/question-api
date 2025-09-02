@@ -19,7 +19,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: LoginRequest) {
+  login(@Request() req: LoginRequest) {
     // Mudar para @Request() em vez de @Body()
     return this.authService.login(req.user); // req.user vem da LocalStrategy
   }
