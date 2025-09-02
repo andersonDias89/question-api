@@ -21,8 +21,7 @@ import { AuthenticatedRequest } from '../auth/types/request.types';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Endpoints protegidos por autenticação
-  @UseGuards(JwtAuthGuard)
+  // Endpoint público para listar usuários
   @Get()
   async getUsers() {
     return this.userService.getUsers();
