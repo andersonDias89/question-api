@@ -120,7 +120,7 @@ export class PaymentService {
       });
 
       return plainToInstance(SubscriptionResponseDto, subscription);
-    } catch {
+    } catch (error) {
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
@@ -251,7 +251,7 @@ export class PaymentService {
       });
 
       return plainToInstance(SubscriptionResponseDto, subscription);
-    } catch {
+    } catch (error) {
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
@@ -366,7 +366,7 @@ export class PaymentService {
         default:
           console.log(`Evento não tratado: ${event.type}`);
       }
-    } catch {
+    } catch (error) {
       console.error('Erro ao processar webhook:', error);
       throw error;
     }

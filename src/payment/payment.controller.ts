@@ -18,6 +18,7 @@ import { CreateSubscriptionDto } from './dtos/create-subscription.dto';
 import { SubscriptionResponseDto } from './dtos/subscription-response.dto';
 import { SubscriptionStatusDto } from './dtos/subscription-status.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthenticatedRequest } from '../auth/types/request.types';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
 
@@ -45,7 +46,7 @@ export class PaymentController {
   @Post('subscription')
   @HttpCode(HttpStatus.CREATED)
   async createSubscription(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<SubscriptionResponseDto> {
     console.log('🎯 PaymentController - createSubscription chamado');
@@ -72,7 +73,7 @@ export class PaymentController {
   @Post('subscription/test')
   @HttpCode(HttpStatus.CREATED)
   async createSubscriptionWithTestPayment(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<SubscriptionResponseDto> {
     console.log(
@@ -99,21 +100,25 @@ export class PaymentController {
   @UseGuards(JwtAuthGuard)
   @Get('subscription')
   async getSubscription(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
   ): Promise<SubscriptionResponseDto | null> {
     return await this.paymentService.getSubscription(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('subscription/status')
-  async getSubscriptionStatus(@Request() req): Promise<SubscriptionStatusDto> {
+  async getSubscriptionStatus(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<SubscriptionStatusDto> {
     return await this.paymentService.getSubscriptionStatus(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('subscription')
   @HttpCode(HttpStatus.OK)
-  async cancelSubscription(@Request() req): Promise<SubscriptionResponseDto> {
+  async cancelSubscription(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<SubscriptionResponseDto> {
     return await this.paymentService.cancelSubscription(req.user.userId);
   }
 
