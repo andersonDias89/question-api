@@ -1,21 +1,21 @@
-import { Expose, Exclude } from 'class-transformer';
+import { Expose, Exclude } from 'class-transformer'
 
 export class UserResponseDto {
   @Expose()
-  id: string;
+  id: string
 
   @Expose()
-  name: string;
+  name: string
 
   @Expose()
-  email: string;
+  email: string
 
   @Exclude()
-  password?: string;
+  password?: string
 
   @Expose()
-  createdAt: Date;
+  createdAt: Date
 
   @Expose()
-  updatedAt: Date;
+  updatedAt: Date
 }

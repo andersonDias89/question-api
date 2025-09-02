@@ -1,14 +1,14 @@
-import { Expose } from 'class-transformer';
+import { Expose } from 'class-transformer'
 
 export class SubscriptionStatusDto {
   @Expose()
-  hasActiveSubscription: boolean;
+  hasActiveSubscription: boolean
 
   @Expose()
   subscription?: {
-    id: string;
-    status: string;
-    currentPeriodEnd: Date;
-    cancelAtPeriodEnd: boolean;
-  };
+    id: string
+    status: string
+    currentPeriodEnd: Date
+    cancelAtPeriodEnd: boolean
+  }
 }
