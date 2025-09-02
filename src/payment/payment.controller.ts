@@ -28,7 +28,7 @@ export class PaymentController {
 
   constructor(
     private readonly paymentService: PaymentService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     const secretKey = this.configService.get<string>('payment.secretKey');
 
@@ -47,25 +47,25 @@ export class PaymentController {
   @HttpCode(HttpStatus.CREATED)
   async createSubscription(
     @Request() req: AuthenticatedRequest,
-    @Body() createSubscriptionDto: CreateSubscriptionDto,
+    @Body() createSubscriptionDto: CreateSubscriptionDto
   ): Promise<SubscriptionResponseDto> {
     console.log('🎯 PaymentController - createSubscription chamado');
     console.log('🎯 PaymentController - req.user:', req.user);
     console.log('🎯 PaymentController - req.user.userId:', req.user?.userId);
     console.log(
       '🎯 PaymentController - createSubscriptionDto:',
-      createSubscriptionDto,
+      createSubscriptionDto
     );
 
     if (!req.user || !req.user.userId) {
       throw new BadRequestException(
-        'Usuário não autenticado ou ID não encontrado',
+        'Usuário não autenticado ou ID não encontrado'
       );
     }
 
     return await this.paymentService.createSubscription(
       req.user.userId,
-      createSubscriptionDto,
+      createSubscriptionDto
     );
   }
 
@@ -74,33 +74,33 @@ export class PaymentController {
   @HttpCode(HttpStatus.CREATED)
   async createSubscriptionWithTestPayment(
     @Request() req: AuthenticatedRequest,
-    @Body() createSubscriptionDto: CreateSubscriptionDto,
+    @Body() createSubscriptionDto: CreateSubscriptionDto
   ): Promise<SubscriptionResponseDto> {
     console.log(
-      '🎯 PaymentController - createSubscriptionWithTestPayment chamado',
+      '🎯 PaymentController - createSubscriptionWithTestPayment chamado'
     );
     console.log('🎯 PaymentController - req.user.userId:', req.user?.userId);
     console.log(
       '🎯 PaymentController - createSubscriptionDto:',
-      createSubscriptionDto,
+      createSubscriptionDto
     );
 
     if (!req.user || !req.user.userId) {
       throw new BadRequestException(
-        'Usuário não autenticado ou ID não encontrado',
+        'Usuário não autenticado ou ID não encontrado'
       );
     }
 
     return await this.paymentService.createSubscriptionWithTestPaymentMethod(
       req.user.userId,
-      createSubscriptionDto,
+      createSubscriptionDto
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('subscription')
   async getSubscription(
-    @Request() req: AuthenticatedRequest,
+    @Request() req: AuthenticatedRequest
   ): Promise<SubscriptionResponseDto | null> {
     return await this.paymentService.getSubscription(req.user.userId);
   }
@@ -108,7 +108,7 @@ export class PaymentController {
   @UseGuards(JwtAuthGuard)
   @Get('subscription/status')
   async getSubscriptionStatus(
-    @Request() req: AuthenticatedRequest,
+    @Request() req: AuthenticatedRequest
   ): Promise<SubscriptionStatusDto> {
     return await this.paymentService.getSubscriptionStatus(req.user.userId);
   }
@@ -117,7 +117,7 @@ export class PaymentController {
   @Delete('subscription')
   @HttpCode(HttpStatus.OK)
   async cancelSubscription(
-    @Request() req: AuthenticatedRequest,
+    @Request() req: AuthenticatedRequest
   ): Promise<SubscriptionResponseDto> {
     return await this.paymentService.cancelSubscription(req.user.userId);
   }
@@ -127,10 +127,10 @@ export class PaymentController {
   @HttpCode(HttpStatus.OK)
   async handleWebhook(
     @Req() request: RawBodyRequest<Request>,
-    @Headers('stripe-signature') signature: string,
+    @Headers('stripe-signature') signature: string
   ): Promise<void> {
     const webhookSecret = this.configService.get<string>(
-      'payment.webhookSecret',
+      'payment.webhookSecret'
     );
 
     if (!webhookSecret) {
@@ -148,7 +148,7 @@ export class PaymentController {
       event = this.stripe.webhooks.constructEvent(
         request.rawBody,
         signature,
-        webhookSecret,
+        webhookSecret
       );
     } catch (err) {
       console.error('Erro na assinatura do webhook:', err);

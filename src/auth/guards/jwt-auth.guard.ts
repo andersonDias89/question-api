@@ -32,7 +32,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     console.log(
       '✅ JwtAuthGuard - Token encontrado:',
-      token.substring(0, 20) + '...',
+      token.substring(0, 20) + '...'
     );
 
     return super.canActivate(context);

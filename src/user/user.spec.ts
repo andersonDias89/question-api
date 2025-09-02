@@ -119,10 +119,10 @@ describe('UserService', () => {
 
       // Act & Assert
       await expect(service.getUserById(userId)).rejects.toThrow(
-        NotFoundException,
+        NotFoundException
       );
       await expect(service.getUserById(userId)).rejects.toThrow(
-        'user not found',
+        'user not found'
       );
     });
   });
@@ -188,10 +188,10 @@ describe('UserService', () => {
 
       // Act & Assert
       await expect(service.createUser(createUserDto)).rejects.toThrow(
-        ConflictException,
+        ConflictException
       );
       await expect(service.createUser(createUserDto)).rejects.toThrow(
-        'Email already exists',
+        'Email already exists'
       );
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: createUserDto.email },

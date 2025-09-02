@@ -43,7 +43,7 @@ export class UserController {
   @Put('profile')
   async updateUserProfile(
     @Request() req: AuthenticatedRequest,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto
   ) {
     return this.userService.updateUser(req.user.userId, updateUserDto);
   }
@@ -53,7 +53,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async changePassword(
     @Request() req: AuthenticatedRequest,
-    @Body() changePasswordDto: ChangePasswordDto,
+    @Body() changePasswordDto: ChangePasswordDto
   ) {
     return this.userService.changePassword(req.user.userId, changePasswordDto);
   }

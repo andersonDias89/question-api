@@ -15,7 +15,7 @@ export const ParamId = createParamDecorator(
     }
 
     return id;
-  },
+  }
 );
 
 function isValidUUID(uuid: string): boolean {

@@ -19,7 +19,7 @@ export class UserService {
 
   async getUsers() {
     const users = await this.prisma.user.findMany();
-    return users.map((user) => plainToInstance(UserResponseDto, user));
+    return users.map(user => plainToInstance(UserResponseDto, user));
   }
 
   async getUserById(id: string) {
@@ -63,7 +63,7 @@ export class UserService {
 
   async updateUser(
     userId: string,
-    updateUserDto: UpdateUserDto,
+    updateUserDto: UpdateUserDto
   ): Promise<UserResponseDto> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -93,7 +93,7 @@ export class UserService {
 
   async changePassword(
     userId: string,
-    changePasswordDto: ChangePasswordDto,
+    changePasswordDto: ChangePasswordDto
   ): Promise<{ message: string }> {
     const { currentPassword, newPassword } = changePasswordDto;
 
@@ -108,7 +108,7 @@ export class UserService {
     // Verificar senha atual
     const isCurrentPasswordValid = await comparePassword(
       currentPassword,
-      user.password,
+      user.password
     );
     if (!isCurrentPasswordValid) {
       throw new UnauthorizedException('Current password is incorrect');
@@ -118,7 +118,7 @@ export class UserService {
     const isSamePassword = await comparePassword(newPassword, user.password);
     if (isSamePassword) {
       throw new BadRequestException(
-        'New password must be different from the current password',
+        'New password must be different from the current password'
       );
     }
 

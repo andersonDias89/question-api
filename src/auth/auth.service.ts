@@ -11,12 +11,12 @@ import * as crypto from 'crypto';
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   async validateUser(
     email: string,
-    password: string,
+    password: string
   ): Promise<UserResponseDto | null> {
     console.log('Validando usuário:', email); // Debug
 
@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   async forgotPassword(
-    forgotPasswordDto: ForgotPasswordDto,
+    forgotPasswordDto: ForgotPasswordDto
   ): Promise<{ message: string }> {
     const { email } = forgotPasswordDto;
 
@@ -96,7 +96,7 @@ export class AuthService {
     console.log('🔑 Reset Password Token para', email, ':', resetToken);
     console.log(
       '🔗 Link de reset: http://localhost:3000/auth/reset-password?token=' +
-        resetToken,
+        resetToken
     );
 
     return {
@@ -106,7 +106,7 @@ export class AuthService {
   }
 
   async resetPassword(
-    resetPasswordDto: ResetPasswordDto,
+    resetPasswordDto: ResetPasswordDto
   ): Promise<{ message: string }> {
     const { token, newPassword } = resetPasswordDto;
 

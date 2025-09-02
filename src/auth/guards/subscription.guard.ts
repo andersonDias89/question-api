@@ -25,13 +25,13 @@ export class SubscriptionGuard implements CanActivate {
 
     if (!subscription) {
       throw new ForbiddenException(
-        'Subscription required to access this resource',
+        'Subscription required to access this resource'
       );
     }
 
     if (subscription.status !== 'active') {
       throw new ForbiddenException(
-        'Subscription is not active. Current status: ' + subscription.status,
+        'Subscription is not active. Current status: ' + subscription.status
       );
     }
 

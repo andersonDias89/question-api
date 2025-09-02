@@ -17,7 +17,7 @@ export class PaymentService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     const secretKey = this.configService.get<string>('payment.secretKey');
     const apiVersion = this.configService.get<string>('payment.apiVersion');
@@ -33,7 +33,7 @@ export class PaymentService {
 
   async createSubscription(
     userId: string,
-    createSubscriptionDto: CreateSubscriptionDto,
+    createSubscriptionDto: CreateSubscriptionDto
   ): Promise<SubscriptionResponseDto> {
     try {
       // 1. Verificar se usuário já tem assinatura
@@ -59,7 +59,7 @@ export class PaymentService {
         await this.stripe.prices.retrieve(createSubscriptionDto.priceId);
       } catch {
         throw new BadRequestException(
-          'Price ID inválido ou não encontrado no Stripe',
+          'Price ID inválido ou não encontrado no Stripe'
         );
       }
 
@@ -99,7 +99,7 @@ export class PaymentService {
 
       // 7. Salvar no banco local
       const currentPeriodEnd = new Date(
-        (stripeSubscription as any).current_period_end * 1000,
+        (stripeSubscription as any).current_period_end * 1000
       );
 
       const subscription = await this.prisma.subscription.create({
@@ -136,7 +136,7 @@ export class PaymentService {
   // Método para criar assinatura com método de pagamento de teste (apenas para desenvolvimento)
   async createSubscriptionWithTestPaymentMethod(
     userId: string,
-    createSubscriptionDto: CreateSubscriptionDto,
+    createSubscriptionDto: CreateSubscriptionDto
   ): Promise<SubscriptionResponseDto> {
     try {
       // 1. Verificar se usuário já tem assinatura
@@ -162,7 +162,7 @@ export class PaymentService {
         await this.stripe.prices.retrieve(createSubscriptionDto.priceId);
       } catch {
         throw new BadRequestException(
-          'Price ID inválido ou não encontrado no Stripe',
+          'Price ID inválido ou não encontrado no Stripe'
         );
       }
 
@@ -223,13 +223,13 @@ export class PaymentService {
           .payment_intent;
         console.log(
           '🔗 Configurando return_url para PaymentIntent:',
-          paymentIntent.id,
+          paymentIntent.id
         );
       }
 
       // 10. Salvar no banco local
       const currentPeriodEnd = new Date(
-        (stripeSubscription as any).current_period_end * 1000,
+        (stripeSubscription as any).current_period_end * 1000
       );
 
       const subscription = await this.prisma.subscription.create({
@@ -261,14 +261,14 @@ export class PaymentService {
 
       console.error(
         '❌ Erro ao criar assinatura com método de pagamento:',
-        error,
+        error
       );
       throw new BadRequestException('Erro ao processar assinatura');
     }
   }
 
   async getSubscription(
-    userId: string,
+    userId: string
   ): Promise<SubscriptionResponseDto | null> {
     const subscription = await this.prisma.subscription.findUnique({
       where: { userId },
@@ -373,7 +373,7 @@ export class PaymentService {
   }
 
   private async handleSubscriptionCreated(
-    subscription: Stripe.Subscription,
+    subscription: Stripe.Subscription
   ): Promise<void> {
     const userId = subscription.metadata?.userId;
     if (!userId) {
@@ -386,14 +386,14 @@ export class PaymentService {
       data: {
         status: subscription.status,
         currentPeriodEnd: new Date(
-          (subscription as any).current_period_end * 1000,
+          (subscription as any).current_period_end * 1000
         ),
       },
     });
   }
 
   private async handleSubscriptionUpdated(
-    subscription: Stripe.Subscription,
+    subscription: Stripe.Subscription
   ): Promise<void> {
     const userId = subscription.metadata?.userId;
     if (!userId) {
@@ -406,7 +406,7 @@ export class PaymentService {
       data: {
         status: subscription.status,
         currentPeriodEnd: new Date(
-          (subscription as any).current_period_end * 1000,
+          (subscription as any).current_period_end * 1000
         ),
         cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
       },
@@ -414,7 +414,7 @@ export class PaymentService {
   }
 
   private async handleSubscriptionDeleted(
-    subscription: Stripe.Subscription,
+    subscription: Stripe.Subscription
   ): Promise<void> {
     const userId = subscription.metadata?.userId;
     if (!userId) {
