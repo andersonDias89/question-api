@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { hashPassword } from '../common/password';
+import { hashPassword } from '@/common/password';
 
 // Mock da função hashPassword
-jest.mock('../common/password', () => ({
+jest.mock('@/common/password', () => ({
   hashPassword: jest.fn(),
 }));
 
