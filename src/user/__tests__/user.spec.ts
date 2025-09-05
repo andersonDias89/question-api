@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserService } from './user.service'
+import { UserService } from '../user.service'
 import { PrismaService } from '@/prisma/prisma.service'
 import { ConflictException, NotFoundException } from '@nestjs/common'
-import { CreateUserDto } from './dtos/create-user.dto'
+import { CreateUserDto } from '../dtos/create-user.dto'
 import { hashPassword } from '@/common/password'
 
 // Mock da função hashPassword
