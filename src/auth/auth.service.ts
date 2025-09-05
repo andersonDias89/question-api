@@ -29,7 +29,14 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {
     // Limpeza automática de tokens expirados a cada hora
-    setInterval(() => this.cleanupExpiredTokens(), 60 * 60 * 1000)
+    setInterval(
+      () => {
+        this.cleanupExpiredTokens().catch(error => {
+          console.error('Error in cleanup interval:', error)
+        })
+      },
+      60 * 60 * 1000
+    )
   }
 
   async validateUser(
