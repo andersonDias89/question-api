@@ -16,8 +16,8 @@ import { plainToInstance } from 'class-transformer'
 
 // Mock das funções de password
 jest.mock('@/common/password', () => ({
-  hashPassword: jest.fn(),
-  comparePassword: jest.fn(),
+  hashPassword: jest.fn().mockResolvedValue('mocked-hashed-password'),
+  comparePassword: jest.fn().mockResolvedValue(true),
 }))
 
 describe('UserService', () => {
@@ -35,6 +35,9 @@ describe('UserService', () => {
   }
 
   beforeEach(async () => {
+    // Limpar todos os mocks antes de cada teste
+    jest.clearAllMocks()
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
