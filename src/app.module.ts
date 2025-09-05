@@ -14,7 +14,7 @@ import stripeConfig from './config/stripe.config'
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: [`.env.${process.env.NODE_ENV || 'development'}`, '.env'],
       load: [stripeConfig],
     }),
     ThrottlerModule.forRoot([
