@@ -73,9 +73,6 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id }
     const token = this.jwtService.sign(payload)
 
-    console.log('🔑 AuthService - Payload do token:', payload)
-    console.log('🔑 AuthService - Token gerado:', token)
-
     return {
       access_token: token,
       user: {
@@ -103,26 +100,24 @@ export class AuthService {
       }
     }
 
-    // Gerar token de reset
+    // Gerar token de reset (plain) e hash para armazenar
     const resetToken = crypto.randomBytes(32).toString('hex')
+    const resetTokenHash = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex')
     const resetTokenExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutos
 
-    // Salvar token no banco
+    // Salvar hash do token no banco
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
-        resetPasswordToken: resetToken,
+        resetPasswordToken: resetTokenHash,
         resetPasswordExpires: resetTokenExpires,
       },
     })
 
-    // TODO: Aqui você enviaria o email com o token
-    // Para desenvolvimento, vou logar o token
-    console.log('🔑 Reset Password Token para', email, ':', resetToken)
-    console.log(
-      '🔗 Link de reset: http://localhost:3000/auth/reset-password?token=' +
-        resetToken
-    )
+    // TODO: Enviar email com o resetToken (não armazenado em logs)
 
     return {
       message:
@@ -135,9 +130,11 @@ export class AuthService {
   ): Promise<{ message: string }> {
     const { token, newPassword } = resetPasswordDto
 
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+
     const user = await this.prisma.user.findFirst({
       where: {
-        resetPasswordToken: token,
+        resetPasswordToken: tokenHash,
         resetPasswordExpires: {
           gt: new Date(), // Token não expirado
         },
@@ -160,8 +157,6 @@ export class AuthService {
         resetPasswordExpires: null,
       },
     })
-
-    console.log('✅ Senha redefinida com sucesso para:', user.email)
 
     return { message: 'Password reset successfully!' }
   }

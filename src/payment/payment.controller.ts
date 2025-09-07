@@ -13,6 +13,7 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common'
+import { SkipThrottle } from '@nestjs/throttler'
 import { PaymentService } from './payment.service'
 import { CreateSubscriptionDto } from './dtos/create-subscription.dto'
 import { SubscriptionResponseDto } from './dtos/subscription-response.dto'
@@ -21,6 +22,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { AuthenticatedRequest } from '../auth/types/request.types'
 import Stripe from 'stripe'
 import { ConfigService } from '@nestjs/config'
+import { Request as ExpressRequest } from 'express'
 
 @Controller('payment')
 export class PaymentController {
@@ -125,8 +127,9 @@ export class PaymentController {
   // Webhook (NÃO precisa de autenticação)
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
+  @SkipThrottle()
   async handleWebhook(
-    @Req() request: RawBodyRequest<Request>,
+    @Req() request: RawBodyRequest<ExpressRequest>,
     @Headers('stripe-signature') signature: string
   ): Promise<void> {
     const webhookSecret = this.configService.get<string>(
