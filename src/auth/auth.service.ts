@@ -9,10 +9,35 @@ import * as crypto from 'crypto'
 
 @Injectable()
 export class AuthService {
+  // Rate limiting storage (em produção, usar Redis)
+  private readonly loginAttempts = new Map<
+    string,
+    { count: number; lastAttempt: Date }
+  >()
+  private readonly forgotPasswordAttempts = new Map<
+    string,
+    { count: number; lastAttempt: Date }
+  >()
+
+  // Configurações de rate limiting
+  private readonly MAX_LOGIN_ATTEMPTS = 5
+  private readonly MAX_FORGOT_PASSWORD_ATTEMPTS = 3
+  private readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutos
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService
-  ) {}
+  ) {
+    // Limpeza automática de tokens expirados a cada hora
+    setInterval(
+      () => {
+        this.cleanupExpiredTokens().catch(error => {
+          console.error('Error in cleanup interval:', error)
+        })
+      },
+      60 * 60 * 1000
+    )
+  }
 
   async validateUser(
     email: string,
@@ -139,5 +164,30 @@ export class AuthService {
     console.log('✅ Senha redefinida com sucesso para:', user.email)
 
     return { message: 'Password reset successfully!' }
+  }
+
+  // Limpeza automática de tokens expirados
+  private async cleanupExpiredTokens(): Promise<void> {
+    try {
+      const result = await this.prisma.user.updateMany({
+        where: {
+          resetPasswordExpires: {
+            lt: new Date(),
+          },
+        },
+        data: {
+          resetPasswordToken: null,
+          resetPasswordExpires: null,
+        },
+      })
+
+      if (result.count > 0) {
+        console.log(
+          `🧹 Cleaned up ${result.count} expired password reset tokens`
+        )
+      }
+    } catch (error) {
+      console.error('Error cleaning up expired tokens:', error)
+    }
   }
 }
