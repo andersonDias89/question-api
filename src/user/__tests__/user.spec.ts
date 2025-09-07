@@ -13,6 +13,7 @@ import { ChangePasswordDto } from '../dtos/change-password.dto'
 import { UserResponseDto } from '../dtos/user-response.dto'
 import { hashPassword, comparePassword } from '@/common/password'
 import { plainToInstance } from 'class-transformer'
+import { UserRole } from '@/common/enums/user-role.enum'
 
 // Mock das funções de password
 jest.mock('@/common/password', () => ({
@@ -64,7 +65,7 @@ describe('UserService', () => {
           id: '1',
           name: 'João',
           email: 'joao@email.com',
-          password: 'hash123',
+          role: UserRole.USER,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -72,7 +73,7 @@ describe('UserService', () => {
           id: '2',
           name: 'Maria',
           email: 'maria@email.com',
-          password: 'hash456',
+          role: UserRole.ADMIN,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -108,7 +109,7 @@ describe('UserService', () => {
         id: '1',
         name: 'João',
         email: 'joao@email.com',
-        password: 'hash123',
+        role: UserRole.USER,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
@@ -121,6 +122,14 @@ describe('UserService', () => {
       // Assert
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       })
       expect(result).toBeDefined()
       expect(result.name).toBe('João')
@@ -174,11 +183,13 @@ describe('UserService', () => {
           name: createUserDto.name,
           email: createUserDto.email,
           password: mockHashedPassword,
+          role: UserRole.USER,
         },
         select: {
           id: true,
           name: true,
           email: true,
+          role: true,
         },
       })
       expect(result).toEqual(mockCreatedUser)
@@ -259,6 +270,7 @@ describe('UserService', () => {
           id: true,
           name: true,
           email: true,
+          role: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -536,11 +548,13 @@ describe('UserService', () => {
           name: 'Usuário',
           email: 'usuario@email.com',
           password: mockHashedPassword,
+          role: UserRole.USER,
         },
         select: {
           id: true,
           name: true,
           email: true,
+          role: true,
         },
       })
     })

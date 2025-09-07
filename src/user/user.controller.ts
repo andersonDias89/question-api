@@ -15,14 +15,15 @@ import { UpdateUserDto } from './dtos/update-user.dto'
 import { ChangePasswordDto } from './dtos/change-password.dto'
 import { ParamId } from 'src/decorators/param-id.decorator'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { AdminGuard } from '../auth/guards/admin.guard'
 import { AuthenticatedRequest } from '../auth/types/request.types'
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Proteger listagem de usuários
-  @UseGuards(JwtAuthGuard)
+  // Proteger listagem de usuários - apenas admins
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get()
   async getUsers() {
     return this.userService.getUsers()
@@ -34,7 +35,7 @@ export class UserController {
     return this.userService.getUserById(req.user.userId)
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get(':id')
   async getUserById(@ParamId() id: string) {
     return this.userService.getUserById(id)

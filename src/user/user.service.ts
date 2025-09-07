@@ -12,19 +12,37 @@ import { ChangePasswordDto } from './dtos/change-password.dto'
 import { UserResponseDto } from './dtos/user-response.dto'
 import { hashPassword, comparePassword } from '../common/password'
 import { plainToInstance } from 'class-transformer'
+import { UserRole } from '../common/enums/user-role.enum'
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getUsers() {
-    const users = await this.prisma.user.findMany()
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
     return users.map(user => plainToInstance(UserResponseDto, user))
   }
 
   async getUserById(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
 
     if (!user) {
@@ -50,11 +68,13 @@ export class UserService {
         name: user.name,
         email: user.email,
         password: hashedPassword,
+        role: UserRole.USER, // Define role padrão como USER
       },
       select: {
         id: true,
         name: true,
         email: true,
+        role: true,
       },
     })
 
@@ -83,6 +103,7 @@ export class UserService {
         id: true,
         name: true,
         email: true,
+        role: true,
         createdAt: true,
         updatedAt: true,
       },
