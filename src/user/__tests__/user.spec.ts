@@ -10,9 +10,7 @@ import {
 import { CreateUserDto } from '../dtos/create-user.dto'
 import { UpdateUserDto } from '../dtos/update-user.dto'
 import { ChangePasswordDto } from '../dtos/change-password.dto'
-import { UserResponseDto } from '../dtos/user-response.dto'
 import { hashPassword, comparePassword } from '@/common/password'
-import { plainToInstance } from 'class-transformer'
 
 // Mock das funções de password
 jest.mock('@/common/password', () => ({

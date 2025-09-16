@@ -36,11 +36,9 @@ import { CreateSubscriptionDto } from '../dtos/create-subscription.dto'
 import { SubscriptionResponseDto } from '../dtos/subscription-response.dto'
 import { SubscriptionStatusDto } from '../dtos/subscription-status.dto'
 import { plainToInstance } from 'class-transformer'
-import Stripe from 'stripe'
 
 describe('PaymentService', () => {
   let service: PaymentService
-  let prismaService: PrismaService
   let configService: ConfigService
   let mockStripe: any
 
@@ -93,7 +91,6 @@ describe('PaymentService', () => {
     }).compile()
 
     service = module.get<PaymentService>(PaymentService)
-    prismaService = module.get<PrismaService>(PrismaService)
     configService = module.get<ConfigService>(ConfigService)
 
     // Acessar a instância do Stripe mockada através do serviço
@@ -114,7 +111,9 @@ describe('PaymentService', () => {
       // Act & Assert
       expect(() => {
         new PaymentService(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           mockPrismaService as any,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           mockConfigServiceWithoutKey as any
         )
       }).toThrow('STRIPE_SECRET_KEY não configurada')
@@ -593,6 +592,7 @@ describe('PaymentService', () => {
       mockPrismaService.subscription.update.mockResolvedValue({})
 
       // Act
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await service.handleWebhook(mockEvent as any)
 
       // Assert
@@ -623,6 +623,7 @@ describe('PaymentService', () => {
       mockPrismaService.subscription.update.mockResolvedValue({})
 
       // Act
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await service.handleWebhook(mockEvent as any)
 
       // Assert
@@ -658,6 +659,7 @@ describe('PaymentService', () => {
       mockPrismaService.subscription.update.mockResolvedValue({})
 
       // Act
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await service.handleWebhook(mockEvent as any)
 
       // Assert
@@ -680,6 +682,7 @@ describe('PaymentService', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
 
       // Act
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await service.handleWebhook(mockEvent as any)
 
       // Assert
@@ -709,6 +712,7 @@ describe('PaymentService', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
 
       // Act & Assert
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await expect(service.handleWebhook(mockEvent as any)).rejects.toThrow(
         mockError
       )
@@ -736,6 +740,7 @@ describe('PaymentService', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
 
       // Act
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await service.handleWebhook(mockEvent as any)
 
       // Assert
