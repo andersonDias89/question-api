@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
-import { comparePassword, hashPassword } from 'src/common/password'
+import { PrismaService } from '@/prisma/prisma.service'
+import { comparePassword, hashPassword } from '@/common/password'
 import { JwtService } from '@nestjs/jwt'
-import { UserResponseDto } from 'src/user/dtos/user-response.dto'
+import { UserResponseDto } from '@/user/dtos/user-response.dto'
 import { ForgotPasswordDto } from './dtos/forgot-password.dto'
 import { ResetPasswordDto } from './dtos/reset-password.dto'
 import * as crypto from 'crypto'
@@ -51,7 +51,6 @@ export class AuthService {
         id: true,
         name: true,
         email: true,
-        role: true,
         password: true,
         createdAt: true,
         updatedAt: true,
@@ -82,7 +81,7 @@ export class AuthService {
     const payload = {
       email: user.email,
       sub: user.id,
-      role: user.role,
+      name: user.name,
     }
     const token = this.jwtService.sign(payload)
 
@@ -92,7 +91,6 @@ export class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
       },
     }
   }
